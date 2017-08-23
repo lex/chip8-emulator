@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D7CEAF861F4B6CFC009D5CF6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7CEAF851F4B6CFC009D5CF6 /* main.cpp */; };
+		D7F11C7E1F4C9FB700C7E51E /* chip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7F11C7C1F4C9FB700C7E51E /* chip.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		D7CEAF821F4B6CFC009D5CF6 /* chip */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chip; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CEAF851F4B6CFC009D5CF6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		D7F11C7C1F4C9FB700C7E51E /* chip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chip.cpp; sourceTree = "<group>"; };
+		D7F11C7D1F4C9FB700C7E51E /* chip.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = chip.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				D7CEAF851F4B6CFC009D5CF6 /* main.cpp */,
+				D7F11C7C1F4C9FB700C7E51E /* chip.cpp */,
+				D7F11C7D1F4C9FB700C7E51E /* chip.hpp */,
 			);
 			path = chip;
 			sourceTree = "<group>";
@@ -120,6 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7CEAF861F4B6CFC009D5CF6 /* main.cpp in Sources */,
+				D7F11C7E1F4C9FB700C7E51E /* chip.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +254,7 @@
 				D7CEAF8B1F4B6CFC009D5CF6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
