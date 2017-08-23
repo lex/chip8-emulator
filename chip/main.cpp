@@ -9,8 +9,6 @@
 #include <iostream>
 #include "chip.hpp"
 
-
-
 int main(int argc, const char * argv[]) {
     if (argc < 2) {
         std::cout << "need rom" << std::endl;
@@ -21,7 +19,15 @@ int main(int argc, const char * argv[]) {
 
     Chip chip;
 
-    int r = chip.readRom(file);
+    if (!chip.readRom(file)) {
+        return 1;
+    }
 
-    return r;
+    chip.initialize();
+
+    while (true) {
+        chip.step();
+    }
+
+    return 0;
 }
