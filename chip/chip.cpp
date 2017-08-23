@@ -8,7 +8,7 @@
 
 #include "chip.hpp"
 
-bool Chip::readRom(const std::string& file) {
+bool Chip::ReadRom(const std::string& file) {
     std::ifstream is(file, std::ios::binary | std::ios::ate);
 
     if (!is.is_open()) {
@@ -34,13 +34,13 @@ bool Chip::readRom(const std::string& file) {
     return true;
 }
 
-void Chip::initialize() {
+void Chip::Initialize() {
     PC = 512;
     I = 0;
     SP = 0;
 }
 
-void Chip::step() {
+void Chip::Step() {
     const uint16_t opcode = memory[PC] << 8 | memory[PC + 1];
 
     // https://en.wikipedia.org/wiki/CHIP-8#Opcode_table
@@ -59,7 +59,7 @@ void Chip::step() {
             switch (NN) {
                 case 0x00E0:
                     // Clears the screen.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
@@ -69,7 +69,7 @@ void Chip::step() {
                     break;
 
                 default:
-                    unknownOpcode(opcode);
+                    UnknownOpcode(opcode);
                     break;
             }
 
@@ -176,7 +176,7 @@ void Chip::step() {
                     break;
 
                 default:
-                    unknownOpcode(opcode);
+                    UnknownOpcode(opcode);
                     break;
             }
 
@@ -190,7 +190,7 @@ void Chip::step() {
                     break;
 
                 default:
-                    unknownOpcode(opcode);
+                    UnknownOpcode(opcode);
                     break;
             }
 
@@ -215,7 +215,7 @@ void Chip::step() {
 
         case 0xD000:
             // Draws a sprite at coordinate (VX, VY)
-            unimplementedOpcode(opcode);
+            UnimplementedOpcode(opcode);
             PC += 2;
             break;
 
@@ -223,13 +223,13 @@ void Chip::step() {
             switch (NN) {
                 case 0x9E:
                     // Skips the next instruction if the key stored in VX is pressed.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
                 case 0xA1:
                     // Skips the next instruction if the key stored in VX isn't pressed.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
@@ -247,7 +247,7 @@ void Chip::step() {
 
                 case 0x0A:
                     // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
@@ -271,25 +271,25 @@ void Chip::step() {
 
                 case 0x29:
                     // Sets I to the location of the sprite for the character in VX.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
                 case 0x33:
                     // Stores the binary-coded decimal representation of VX
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
                 case 0x55:
                     // Stores V0 to VX (including VX) in memory starting at address I.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
 
                 case 0x65:
                     // Fills V0 to VX (including VX) with values from memory starting at address I.
-                    unimplementedOpcode(opcode);
+                    UnimplementedOpcode(opcode);
                     PC += 2;
                     break;
             }
@@ -297,18 +297,18 @@ void Chip::step() {
             break;
 
         default:
-            unknownOpcode(opcode);
+            UnknownOpcode(opcode);
             break;
     }
 }
 
-void Chip::unimplementedOpcode(const uint16_t& opcode) const {
+void Chip::UnimplementedOpcode(const uint16_t& opcode) const {
     std::cout << "Unimplemented opcode: ";
     std::cout << std::hex << std::uppercase << static_cast<int>(opcode);
     std::cout << std::dec << std::nouppercase << std::endl;
 }
 
-void Chip::unknownOpcode(const uint16_t& opcode) const {
+void Chip::UnknownOpcode(const uint16_t& opcode) const {
     std::cout << "Unknown opcode: ";
     std::cout << std::hex << std::uppercase << static_cast<int>(opcode);
     std::cout << std::dec << std::nouppercase << std::endl;

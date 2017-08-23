@@ -17,9 +17,9 @@
 
 class Chip {
 public:
-    bool readRom(const std::string& file);
-    void initialize();
-    void step();
+    bool ReadRom(const std::string& file);
+    void Initialize();
+    void Step();
 
 private:
     const size_t MAXIMUM_GAME_SIZE = 4096 - 512;
@@ -63,8 +63,8 @@ private:
     // Sound timer: This timer is used for sound effects. When its value is nonzero, a beeping sound is made.
     uint8_t soundTimer = 0;
 
-    void unimplementedOpcode(const uint16_t& opcode) const;
-    void unknownOpcode(const uint16_t& opcode) const;
+    void UnimplementedOpcode(const uint16_t& opcode) const;
+    void UnknownOpcode(const uint16_t& opcode) const;
 };
 
 #endif /* chip_hpp */

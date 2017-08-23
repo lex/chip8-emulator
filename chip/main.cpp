@@ -19,14 +19,14 @@ int main(int argc, const char * argv[]) {
 
     Chip chip;
 
-    if (!chip.readRom(file)) {
+    if (!chip.ReadRom(file)) {
         return 1;
     }
 
-    chip.initialize();
+    chip.Initialize();
 
     while (true) {
-        chip.step();
+        chip.Step();
     }
 
     return 0;
