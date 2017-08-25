@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "chip.hpp"
+#include <SDL.h>
 
 int main(int argc, const char * argv[]) {
     if (argc < 2) {

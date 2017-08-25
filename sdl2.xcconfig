@@ -1,0 +1,2 @@
+SDL2_LIBS=-L/usr/local/lib -lSDL2
+SDL2_CFLAGS=-I/usr/local/include/SDL2 -D_THREAD_SAFE

@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D7CEAF861F4B6CFC009D5CF6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7CEAF851F4B6CFC009D5CF6 /* main.cpp */; };
-		D7F11C7E1F4C9FB700C7E51E /* chip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7F11C7C1F4C9FB700C7E51E /* chip.cpp */; };
+		D701C6371F504DCF00D4A259 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D701C6361F504DCF00D4A259 /* libSDL2-2.0.0.dylib */; };
+		D7CEAF861F4B6CFC009D5CF6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7CEAF851F4B6CFC009D5CF6 /* main.cpp */; settings = {COMPILER_FLAGS = "$(SDL2_LIBS) $(SDL2_CFLAGS)"; }; };
+		D7F11C7E1F4C9FB700C7E51E /* chip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7F11C7C1F4C9FB700C7E51E /* chip.cpp */; settings = {COMPILER_FLAGS = "$(SDL2_LIBS) $(SDL2_CFLAGS)"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,6 +25,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D701C6361F504DCF00D4A259 /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../usr/local/Cellar/sdl2/2.0.5/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		D721F0EB1F5041C9005392AF /* sdl2.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = sdl2.xcconfig; sourceTree = "<group>"; };
 		D7CEAF821F4B6CFC009D5CF6 /* chip */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chip; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CEAF851F4B6CFC009D5CF6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D7F11C7C1F4C9FB700C7E51E /* chip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chip.cpp; sourceTree = "<group>"; };
@@ -35,17 +38,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D701C6371F504DCF00D4A259 /* libSDL2-2.0.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D701C6351F504DCF00D4A259 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D701C6361F504DCF00D4A259 /* libSDL2-2.0.0.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D7CEAF791F4B6CFC009D5CF6 = {
 			isa = PBXGroup;
 			children = (
+				D721F0EB1F5041C9005392AF /* sdl2.xcconfig */,
 				D7CEAF841F4B6CFC009D5CF6 /* chip */,
 				D7CEAF831F4B6CFC009D5CF6 /* Products */,
+				D701C6351F504DCF00D4A259 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,6 +91,7 @@
 				D7CEAF7E1F4B6CFC009D5CF6 /* Sources */,
 				D7CEAF7F1F4B6CFC009D5CF6 /* Frameworks */,
 				D7CEAF801F4B6CFC009D5CF6 /* CopyFiles */,
+				D721F0EA1F503FD3005392AF /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -119,6 +134,23 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		D721F0EA1F503FD3005392AF /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SDL2_XCCONFIG=\"sdl2.xcconfig\"\nSDL2_LIBS=$(sdl2-config --libs)\nSDL2_CFLAGS=$(sdl2-config --cflags)\necho \"SDL2_LIBS=$SDL2_LIBS\" > $SDL2_XCCONFIG\necho \"SDL2_CFLAGS=$SDL2_CFLAGS\" >> $SDL2_XCCONFIG";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D7CEAF7E1F4B6CFC009D5CF6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -134,6 +166,7 @@
 /* Begin XCBuildConfiguration section */
 		D7CEAF871F4B6CFC009D5CF6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D721F0EB1F5041C9005392AF /* sdl2.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -182,6 +215,7 @@
 		};
 		D7CEAF881F4B6CFC009D5CF6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D721F0EB1F5041C9005392AF /* sdl2.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -223,14 +257,30 @@
 		};
 		D7CEAF8A1F4B6CFC009D5CF6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D721F0EB1F5041C9005392AF /* sdl2.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = "$(SDL2_LIBS)";
+				LIBRARY_SEARCH_PATHS = (
+					"-L/usr/local/lib",
+					"-lSDL2",
+					/usr/local/Cellar/sdl2/2.0.5/lib,
+				);
+				OTHER_CFLAGS = "$(SDL2_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		D7CEAF8B1F4B6CFC009D5CF6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D721F0EB1F5041C9005392AF /* sdl2.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = "$(SDL2_LIBS)";
+				LIBRARY_SEARCH_PATHS = (
+					"-L/usr/local/lib",
+					"-lSDL2",
+					/usr/local/Cellar/sdl2/2.0.5/lib,
+				);
+				OTHER_CFLAGS = "$(SDL2_CFLAGS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
