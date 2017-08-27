@@ -16,8 +16,8 @@ bool Chip::ReadRom(const std::string& file) {
         return false;
     }
 
-    size_t size = is.tellg();
-    std::cout << "rom size: " << size << std::endl;
+    const size_t size = is.tellg();
+    std::cout << "rom size: " << size << " bytes" << std::endl;
 
     if (size > MAXIMUM_GAME_SIZE) {
         std::cout << "rom too large: " << size << " bytes" << std::endl;
@@ -27,7 +27,7 @@ bool Chip::ReadRom(const std::string& file) {
 
     is.seekg(0);
 
-    is.read(reinterpret_cast<char*>(&memory[512]), size);
+    is.read(reinterpret_cast<char*>(&memory.at(PROGRAM_START_ADDRESS)), size);
 
     is.close();
 
@@ -35,9 +35,49 @@ bool Chip::ReadRom(const std::string& file) {
 }
 
 void Chip::Initialize() {
-    PC = 512;
+    PC = PROGRAM_START_ADDRESS;
     I = 0;
     SP = 0;
+    delayTimer = 0;
+    soundTimer = 0;
+
+    ClearScreen();
+    std::copy_n(FONTSET.begin(), FONTSET_SIZE, memory.begin());
+}
+
+void Chip::ClearScreen() {
+    for (auto& row : videoMemory) {
+        std::fill(row.begin(), row.end(), 0);
+    }
+
+    if (debugging) {
+        std::cout << "Screen cleared" << std::endl;
+    }
+}
+
+const VideoMemory& Chip::GetVideoMemory() const {
+    return videoMemory;
+}
+
+void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height) {
+    for (int byteIndex = 0; byteIndex < height; ++byteIndex) {
+        const uint8_t byte = memory[I + byteIndex];
+
+        for (int bitIndex = 0; bitIndex < 8; ++bitIndex) {
+            const uint8_t bit = (byte >> bitIndex) & 0x1;
+
+            const size_t memoryX = (x + (7 - bitIndex)) % VIDEO_MEMORY_COLUMNS;
+            const size_t memoryY = (y + byteIndex) % VIDEO_MEMORY_ROWS;
+
+            const uint8_t oldBit = videoMemory.at(memoryY).at(memoryX);
+
+            // Sprite pixels that are set flip the color of the corresponding screen pixel, while unset sprite pixels do nothing.
+            videoMemory.at(memoryY).at(memoryX) = oldBit ^ bit;
+
+            // The carry flag (VF) is set to 1 if any screen pixels are flipped from set to unset when a sprite is drawn and set to 0 otherwise.
+            V[F] = (oldBit == 1 && bit == 1 ? 1 : 0);
+        }
+    }
 }
 
 void Chip::Step() {
@@ -54,12 +94,18 @@ void Chip::Step() {
     const uint8_t X = (opcode >> 8) & 0x000F;
     const uint8_t Y = (opcode >> 4) & 0x000F;
 
+    if (debugging) {
+        std::cout << "PC: " << PC << " Opcode: ";
+        std::cout << std::hex << std::uppercase << static_cast<int>(opcode) << std::endl;
+        std::cout << std::dec << std::nouppercase << std::endl;
+    }
+
     switch (opcode & 0xF000) {
         case 0x0000:
             switch (NN) {
                 case 0x00E0:
                     // Clears the screen.
-                    UnimplementedOpcode(opcode);
+                    ClearScreen();
                     PC += 2;
                     break;
 
@@ -215,7 +261,7 @@ void Chip::Step() {
 
         case 0xD000:
             // Draws a sprite at coordinate (VX, VY)
-            UnimplementedOpcode(opcode);
+            DrawSprite(V[X], V[Y], N);
             PC += 2;
             break;
 
@@ -230,7 +276,7 @@ void Chip::Step() {
                 case 0xA1:
                     // Skips the next instruction if the key stored in VX isn't pressed.
                     UnimplementedOpcode(opcode);
-                    PC += 2;
+                    PC += 4;
                     break;
 
             }
@@ -271,25 +317,35 @@ void Chip::Step() {
 
                 case 0x29:
                     // Sets I to the location of the sprite for the character in VX.
-                    UnimplementedOpcode(opcode);
+                    I = FONTSET_CHARACTER_SIZE * V[X];
                     PC += 2;
                     break;
 
                 case 0x33:
                     // Stores the binary-coded decimal representation of VX
-                    UnimplementedOpcode(opcode);
+                    memory[I] = (V[X] % 1000) / 100;
+                    memory[I + 1] = (V[X] % 100) / 10;
+                    memory[I + 2] = (V[X] % 10);
                     PC += 2;
                     break;
 
                 case 0x55:
                     // Stores V0 to VX (including VX) in memory starting at address I.
-                    UnimplementedOpcode(opcode);
+                    for (int i = 0; i < X; ++i) {
+                        memory.at(I + i) = V[i];
+                    }
+
+                    I += X + 1;
                     PC += 2;
                     break;
 
                 case 0x65:
                     // Fills V0 to VX (including VX) with values from memory starting at address I.
-                    UnimplementedOpcode(opcode);
+                    for (int i = 0; i < X; ++i) {
+                        V[i] = memory.at(I + i);
+                    }
+
+                    I += X + 1;
                     PC += 2;
                     break;
             }
@@ -300,16 +356,24 @@ void Chip::Step() {
             UnknownOpcode(opcode);
             break;
     }
+
+    if (delayTimer > 0) {
+        --delayTimer;
+    }
+
+    if (soundTimer > 0) {
+        --soundTimer;
+    }
 }
 
 void Chip::UnimplementedOpcode(const uint16_t& opcode) const {
-    std::cout << "Unimplemented opcode: ";
-    std::cout << std::hex << std::uppercase << static_cast<int>(opcode);
-    std::cout << std::dec << std::nouppercase << std::endl;
+    std::cout << "Unimplemented opcode: "
+              << std::hex << std::uppercase << static_cast<int>(opcode)
+              << std::dec << std::nouppercase << std::endl;
 }
 
 void Chip::UnknownOpcode(const uint16_t& opcode) const {
-    std::cout << "Unknown opcode: ";
-    std::cout << std::hex << std::uppercase << static_cast<int>(opcode);
-    std::cout << std::dec << std::nouppercase << std::endl;
+    std::cout << "Unknown opcode: "
+              << std::hex << std::uppercase << static_cast<int>(opcode)
+              << std::dec << std::nouppercase << std::endl;
 }
