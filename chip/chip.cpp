@@ -60,6 +60,8 @@ const VideoMemory& Chip::GetVideoMemory() const {
 }
 
 void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height) {
+    V[F] = 0;
+
     for (int byteIndex = 0; byteIndex < height; ++byteIndex) {
         const uint8_t byte = memory[I + byteIndex];
 
@@ -75,7 +77,13 @@ void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height)
             videoMemory.at(memoryY).at(memoryX) = oldBit ^ bit;
 
             // The carry flag (VF) is set to 1 if any screen pixels are flipped from set to unset when a sprite is drawn and set to 0 otherwise.
-            V[F] = (oldBit == 1 && bit == 1 ? 1 : 0);
+            if (oldBit == 1 && bit == 1) {
+                V[F] = 1;
+            }
+
+            if (debugging && V[F] == 1) {
+                std::cout << "Collision detected at (" << memoryX << ", " << memoryY << ")" << std::endl;
+            }
         }
     }
 }
