@@ -59,6 +59,10 @@ const VideoMemory& Chip::GetVideoMemory() const {
     return videoMemory;
 }
 
+void Chip::SetPressedKeys(const PressedKeys& keys) {
+    std::copy_n(keys.begin(), KEY_COUNT, pressedKeys.begin());
+}
+
 void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height) {
     V[F] = 0;
 
@@ -277,16 +281,39 @@ void Chip::Step() {
             switch (NN) {
                 case 0x9E:
                     // Skips the next instruction if the key stored in VX is pressed.
-                    UnimplementedOpcode(opcode);
-                    PC += 2;
+                    PC += (pressedKeys.at(V[X]) == true ? 4 : 2);
+
+                    if (debugging) {
+                        std::cout << "Checking if key"
+                        << std::hex << std::uppercase << static_cast<int>(V[X])
+                        << std::dec << std::nouppercase
+                        << " has been pressed"
+                        << std::endl;
+                    }
+
+                    readInputs = true;
+
                     break;
 
                 case 0xA1:
                     // Skips the next instruction if the key stored in VX isn't pressed.
-                    UnimplementedOpcode(opcode);
-                    PC += 4;
+                    PC += (pressedKeys.at(V[X]) == false ? 4 : 2);
+
+                    if (debugging) {
+                        std::cout << "Checking if key"
+                        << std::hex << std::uppercase << static_cast<int>(V[X])
+                        << std::dec << std::nouppercase
+                        << " has not been pressed"
+                        << std::endl;
+                    }
+
+                    readInputs = true;
+
                     break;
 
+                default:
+                    UnknownOpcode(opcode);
+                    break;
             }
 
             break;
@@ -339,8 +366,8 @@ void Chip::Step() {
 
                 case 0x55:
                     // Stores V0 to VX (including VX) in memory starting at address I.
-                    for (int i = 0; i < X; ++i) {
-                        memory.at(I + i) = V[i];
+                    for (size_t i = 0; i < X; ++i) {
+                        memory.at(I + i) = V.at(i);
                     }
 
                     I += X + 1;
@@ -349,8 +376,8 @@ void Chip::Step() {
 
                 case 0x65:
                     // Fills V0 to VX (including VX) with values from memory starting at address I.
-                    for (int i = 0; i < X; ++i) {
-                        V[i] = memory.at(I + i);
+                    for (size_t i = 0; i < X; ++i) {
+                        V.at(i) = memory.at(I + i);
                     }
 
                     I += X + 1;
