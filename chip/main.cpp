@@ -7,12 +7,13 @@
 //
 
 #include <iostream>
+#include <algorithm>
 #include <SDL.h>
 
 #include "chip.hpp"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 320
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 640
 
 int main(int argc, const char* argv[]) {
     if (argc < 2) {
@@ -37,7 +38,7 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
-    SDL_RenderSetScale(renderer, 10, 10);
+    SDL_RenderSetScale(renderer, 20, 20);
 
     Chip chip;
 
@@ -50,31 +51,111 @@ int main(int argc, const char* argv[]) {
     SDL_Event event;
     bool running = true;
 
-    while (running) {
-        SDL_RenderClear(renderer);
+    PressedKeys keys{false};
 
-        while (SDL_PollEvent(&event) != 0) {
+    const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 500.0f * 1000.0f);
+
+    while (running) {
+        const uint32_t startTicks = SDL_GetTicks();
+
+        SDL_PumpEvents();
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 224, 119, 32, 255);
+
+        if (chip.readInputs) {
+            std::fill(keys.begin(), keys.end(), false);
+            chip.readInputs = false;
+        }
+
+        while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
 
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
-                    case SDLK_SPACE:
-                        chip.Step();
-                        break;
+                    case SDLK_RETURN:
+                      chip.Step();
+                      break;
+
+                    case SDLK_ESCAPE:
+                      chip.Initialize();
+                      break;
+
+                    case SDLK_BACKSPACE:
+                      chip.debugging = !chip.debugging;
+                      break;
+
+                    case SDLK_1:
+                      keys.at(0x1) = true;
+                      break;
+
+                    case SDLK_2:
+                      keys.at(0x2) = true;
+                      break;
+
+                    case SDLK_3:
+                      keys.at(0x3) = true;
+                      break;
+
+                    case SDLK_4:
+                      keys.at(0xC) = true;
+                      break;
+
+                    case SDLK_q:
+                      keys.at(0x4) = true;
+                      break;
+
+                    case SDLK_w:
+                      keys.at(0x5) = true;
+                      break;
+
+                    case SDLK_e:
+                      keys.at(0x6) = true;
+                      break;
 
                     case SDLK_r:
-                        chip.Initialize();
-                        break;
+                      keys.at(0xD) = true;
+                      break;
+
+                    case SDLK_a:
+                      keys.at(0x7) = true;
+                      break;
+
+                    case SDLK_s:
+                      keys.at(0x8) = true;
+                      break;
 
                     case SDLK_d:
-                        chip.debugging = !chip.debugging;
-                        break;
+                      keys.at(0x9) = true;
+                      break;
 
+                    case SDLK_f:
+                      keys.at(0xE) = true;
+                      break;
+
+                    case SDLK_z:
+                      keys.at(0xA) = true;
+                      break;
+
+                    case SDLK_x:
+                      keys.at(0x0) = true;
+                      break;
+
+                    case SDLK_c:
+                      keys.at(0xB) = true;
+                      break;
+
+                    case SDLK_v:
+                      keys.at(0xF) = true;
+                      break;
                 }
             }
         }
+
+        chip.SetPressedKeys(keys);
 
         if (!chip.debugging) {
             chip.Step();
@@ -99,10 +180,11 @@ int main(int argc, const char* argv[]) {
 
         SDL_RenderPresent(renderer);
 
-        // try to keep it around 60 Hz
-        // seems like drawing the screen is already
-        // taking way longer than it should though
-        SDL_Delay(16);
+        // keep it around 500 Hz
+        const uint32_t endTicks = SDL_GetTicks();
+        const uint32_t dt = std::min(endTicks - startTicks, targetMilliseconds);
+
+        SDL_Delay(targetMilliseconds - dt);
     }
 
     SDL_DestroyWindow(window);

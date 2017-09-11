@@ -27,8 +27,10 @@
 #define MAXIMUM_GAME_SIZE MEMORY_SIZE - PROGRAM_START_ADDRESS
 #define VIDEO_MEMORY_COLUMNS 64
 #define VIDEO_MEMORY_ROWS 32
+#define KEY_COUNT 16
 
 using VideoMemory = std::array<std::array<uint8_t, VIDEO_MEMORY_COLUMNS>, VIDEO_MEMORY_ROWS>;
+using PressedKeys = std::array<bool, KEY_COUNT>;
 
 class Chip {
 public:
@@ -39,9 +41,11 @@ public:
     void Resume();
     const VideoMemory& GetVideoMemory() const;
     bool debugging = false;
+    void SetPressedKeys(const PressedKeys& keys);
+    bool readInputs = false;
 
 private:
-    const std::array<uint8_t, FONTSET_SIZE> FONTSET = {
+    const std::array<uint8_t, FONTSET_SIZE> FONTSET{
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -82,6 +86,8 @@ private:
 
     // Sound timer: This timer is used for sound effects. When its value is nonzero, a beeping sound is made.
     uint8_t soundTimer = 0;
+
+    PressedKeys pressedKeys{false};
 
     void UnimplementedOpcode(const uint16_t& opcode) const;
     void UnknownOpcode(const uint16_t& opcode) const;
