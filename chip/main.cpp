@@ -15,8 +15,8 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 640
 
-size_t mapKey(SDL_Keycode sym) {
-    switch (sym) {
+size_t mapKey(SDL_Keycode keycode) {
+    switch (keycode) {
         case SDLK_1:
             return 0x1;
         case SDLK_2:
@@ -50,7 +50,7 @@ size_t mapKey(SDL_Keycode sym) {
         case SDLK_v:
             return 0xF;
         default:
-            return 0x0;
+            return 0x10;
     }
 }
 
@@ -87,10 +87,10 @@ int main(int argc, const char* argv[]) {
 
     chip.Initialize();
 
+    const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 500.0f * 1000.0f);
+
     SDL_Event event;
     bool running = true;
-
-    const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 500.0f * 1000.0f);
 
     while (running) {
         const uint32_t startTicks = SDL_GetTicks();
@@ -100,6 +100,7 @@ int main(int argc, const char* argv[]) {
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 224, 119, 32, 255);
 
+        // handle input
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
@@ -120,7 +121,12 @@ int main(int argc, const char* argv[]) {
                         break;
 
                     default:
-                        chip.SetKeyState(mapKey(event.key.keysym.sym), event.type == SDL_KEYDOWN);
+                        const size_t key = mapKey(event.key.keysym.sym);
+
+                        if (key <= 0xF) {
+                            chip.SetKeyState(key, event.type == SDL_KEYDOWN);
+                        }
+
                         break;
                 }
             }
@@ -156,6 +162,7 @@ int main(int argc, const char* argv[]) {
         SDL_Delay(targetMilliseconds - dt);
     }
 
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

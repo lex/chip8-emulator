@@ -21,7 +21,6 @@
 #define STACK_SIZE 16
 #define FONTSET_SIZE 80
 #define FONTSET_CHARACTER_SIZE 5
-#define FONTSET_ADDRESS 0
 #define F 15
 #define PROGRAM_START_ADDRESS 512
 #define MAXIMUM_GAME_SIZE MEMORY_SIZE - PROGRAM_START_ADDRESS
@@ -88,10 +87,10 @@ private:
 
     PressedKeys pressedKeys{false};
 
-    void UnimplementedOpcode(const uint16_t& opcode) const;
-    void UnknownOpcode(const uint16_t& opcode) const;
+    void UnimplementedInstruction(const uint16_t instruction) const;
+    void UnknownInstruction(const uint16_t instruction) const;
     void ClearScreen();
-    void DrawSprite(const uint8_t& x, const uint8_t& y, const uint8_t& height);
+    void DrawSprite(const uint8_t x, const uint8_t y, const uint8_t height);
 };
 
 #endif /* chip_hpp */

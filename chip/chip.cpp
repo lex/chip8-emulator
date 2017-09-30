@@ -63,7 +63,7 @@ void Chip::SetKeyState(const size_t key, const bool pressed) {
     pressedKeys.at(key) = pressed;
 }
 
-void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height) {
+void Chip::DrawSprite(const uint8_t x, const uint8_t y, const uint8_t height) {
     V[F] = 0;
 
     for (int byteIndex = 0; byteIndex < height; ++byteIndex) {
@@ -93,26 +93,27 @@ void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height)
 }
 
 void Chip::Step() {
-    const uint16_t opcode = memory[PC] << 8 | memory[PC + 1];
+    const uint16_t instruction = memory[PC] << 8 | memory[PC + 1];
 
     // https://en.wikipedia.org/wiki/CHIP-8#Opcode_table
     // NNN: address
     // NN: 8-bit constant
     // N: 4-bit constant
     // X and Y: 4-bit register identifier
-    const uint16_t NNN = opcode & 0x0FFF;
-    const uint8_t NN = opcode & 0x00FF;
-    const uint8_t N = opcode & 0x00F;
-    const uint8_t X = (opcode >> 8) & 0x000F;
-    const uint8_t Y = (opcode >> 4) & 0x000F;
+    const uint16_t NNN = instruction & 0x0FFF;
+    const uint8_t NN = instruction & 0x00FF;
+    const uint8_t N = instruction & 0x00F;
+    const uint8_t X = (instruction >> 8) & 0x000F;
+    const uint8_t Y = (instruction >> 4) & 0x000F;
+    const uint8_t opcode = instruction & 0xF000;
 
     if (debugging) {
-        std::cout << "PC: " << PC << " Opcode: ";
-        std::cout << std::hex << std::uppercase << static_cast<int>(opcode) << std::endl;
+        std::cout << "PC: " << PC << " Instruction: ";
+        std::cout << std::hex << std::uppercase << static_cast<int>(instruction) << std::endl;
         std::cout << std::dec << std::nouppercase << std::endl;
     }
 
-    switch (opcode & 0xF000) {
+    switch (instruction & 0xF000) {
         case 0x0000:
             switch (NN) {
                 case 0x00E0:
@@ -127,7 +128,7 @@ void Chip::Step() {
                     break;
 
                 default:
-                    UnknownOpcode(opcode);
+                    UnknownInstruction(instruction);
                     break;
             }
 
@@ -234,7 +235,7 @@ void Chip::Step() {
                     break;
 
                 default:
-                    UnknownOpcode(opcode);
+                    UnknownInstruction(instruction);
                     break;
             }
 
@@ -248,7 +249,7 @@ void Chip::Step() {
                     break;
 
                 default:
-                    UnknownOpcode(opcode);
+                    UnknownInstruction(instruction);
                     break;
             }
 
@@ -308,7 +309,7 @@ void Chip::Step() {
                     break;
 
                 default:
-                    UnknownOpcode(opcode);
+                    UnknownInstruction(instruction);
                     break;
             }
 
@@ -324,7 +325,7 @@ void Chip::Step() {
 
                 case 0x0A:
                     // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
-                    UnimplementedOpcode(opcode);
+                    UnimplementedInstruction(instruction);
                     PC += 2;
                     break;
 
@@ -354,9 +355,10 @@ void Chip::Step() {
 
                 case 0x33:
                     // Stores the binary-coded decimal representation of VX
-                    memory[I] = (V[X] % 1000) / 100;
-                    memory[I + 1] = (V[X] % 100) / 10;
-                    memory[I + 2] = (V[X] % 10);
+                    memory.at(I) = (V[X] % 1000) / 100;
+                    memory.at(I + 1) = (V[X] % 100) / 10;
+                    memory.at(I + 2) = (V[X] % 10);
+
                     PC += 2;
                     break;
 
@@ -384,7 +386,7 @@ void Chip::Step() {
             break;
 
         default:
-            UnknownOpcode(opcode);
+            UnknownInstruction(instruction);
             break;
     }
 
@@ -397,14 +399,14 @@ void Chip::Step() {
     }
 }
 
-void Chip::UnimplementedOpcode(const uint16_t& opcode) const {
-    std::cout << "Unimplemented opcode: "
-              << std::hex << std::uppercase << static_cast<int>(opcode)
+void Chip::UnimplementedInstruction(const uint16_t instruction) const {
+    std::cout << "Unimplemented instruction: "
+              << std::hex << std::uppercase << static_cast<int>(instruction)
               << std::dec << std::nouppercase << std::endl;
 }
 
-void Chip::UnknownOpcode(const uint16_t& opcode) const {
-    std::cout << "Unknown opcode: "
-              << std::hex << std::uppercase << static_cast<int>(opcode)
+void Chip::UnknownInstruction(const uint16_t instruction) const {
+    std::cout << "Unknown instruction: "
+              << std::hex << std::uppercase << static_cast<int>(instruction)
               << std::dec << std::nouppercase << std::endl;
 }
