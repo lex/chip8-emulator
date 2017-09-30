@@ -15,6 +15,45 @@
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 320
 
+size_t mapKey(SDL_Keycode sym) {
+    switch (sym) {
+        case SDLK_1:
+            return 0x1;
+        case SDLK_2:
+            return 0x2;
+        case SDLK_3:
+            return 0x3;
+        case SDLK_4:
+            return 0xC;
+        case SDLK_q:
+            return 0x4;
+        case SDLK_w:
+            return 0x5;
+        case SDLK_e:
+            return 0x6;
+        case SDLK_r:
+            return 0xD;
+        case SDLK_a:
+            return 0x7;
+        case SDLK_s:
+            return 0x8;
+        case SDLK_d:
+            return 0x9;
+        case SDLK_f:
+            return 0xE;
+        case SDLK_z:
+            return 0xA;
+        case SDLK_x:
+            return 0x0;
+        case SDLK_c:
+            return 0xB;
+        case SDLK_v:
+            return 0xF;
+        default:
+            return 0x0;
+    }
+}
+
 int main(int argc, const char* argv[]) {
     if (argc < 2) {
         std::cout << "need rom" << std::endl;
@@ -51,125 +90,42 @@ int main(int argc, const char* argv[]) {
     SDL_Event event;
     bool running = true;
 
-    PressedKeys keys{false};
-
-    const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 60.0f * 1000.0f);
+    const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 500.0f * 1000.0f);
 
     while (running) {
         const uint32_t startTicks = SDL_GetTicks();
 
         SDL_PumpEvents();
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        if (chip.readInputs) {
-            std::fill(keys.begin(), keys.end(), false);
-            chip.readInputs = false;
-        }
+        SDL_SetRenderDrawColor(renderer, 255, 131, 35, 255);
 
         while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
 
-        if (event.type == SDL_QUIT) {
-            running = false;
-        }
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_RETURN:
+                        chip.Step();
+                        break;
 
-        if (event.type == SDL_KEYDOWN) {
-            switch (event.key.keysym.sym) {
-                case SDLK_RETURN:
-                    chip.Step();
-                    break;
+                    case SDLK_ESCAPE:
+                        chip.Initialize();
+                        break;
 
-                case SDLK_ESCAPE:
-                    chip.Initialize();
-                    break;
+                    case SDLK_BACKSPACE:
+                        chip.debugging = !chip.debugging;
+                        break;
 
-                case SDLK_BACKSPACE:
-                    chip.debugging = !chip.debugging;
-                    break;
-
-                case SDLK_1:
-                    keys.at(0x1) = true;
-                    break;
-
-                case SDLK_2:
-                    keys.at(0x2) = true;
-                    break;
-
-                case SDLK_3:
-                    keys.at(0x3) = true;
-                    break;
-
-                case SDLK_4:
-                    keys.at(0xC) = true;
-                    break;
-
-                case SDLK_q:
-                    keys.at(0x4) = true;
-                    break;
-
-                case SDLK_w:
-                    keys.at(0x5) = true;
-                    break;
-
-                case SDLK_e:
-                    keys.at(0x6) = true;
-                    break;
-
-                case SDLK_r:
-                    keys.at(0xD) = true;
-                    break;
-
-                case SDLK_a:
-                    keys.at(0x7) = true;
-                    break;
-
-                case SDLK_s:
-                    keys.at(0x8) = true;
-                    break;
-
-                case SDLK_d:
-                    keys.at(0x9) = true;
-                    break;
-
-                case SDLK_f:
-                    keys.at(0xE) = true;
-                    break;
-
-                case SDLK_z:
-                    keys.at(0xA) = true;
-                    break;
-
-                case SDLK_x:
-                    keys.at(0x0) = true;
-                    break;
-
-                case SDLK_c:
-                    keys.at(0xB) = true;
-                    break;
-
-                case SDLK_v:
-                    keys.at(0xF) = true;
-                    break;
-
-                case SDLK_RIGHT:
-                    keys.at(6) = true;
-                    break;
-
-                case SDLK_LEFT:
-                    keys.at(5) = true;
-                    break;
-
-                case SDLK_UP:
-                    keys.at(4) = true;
-                    break;
-
-                case SDLK_DOWN:
-                    keys.at(1) = true;
-                    break;
+                    default:
+                        chip.SetKeyState(mapKey(event.key.keysym.sym), event.type == SDL_KEYDOWN);
+                        break;
                 }
             }
         }
-
-        chip.SetPressedKeys(keys);
 
         if (!chip.debugging) {
             chip.Step();
@@ -194,7 +150,7 @@ int main(int argc, const char* argv[]) {
 
         SDL_RenderPresent(renderer);
 
-        // keep it around 60 Hz
+        // keep it around 500 Hz
         const uint32_t endTicks = SDL_GetTicks();
         const uint32_t dt = std::min(endTicks - startTicks, targetMilliseconds);
 

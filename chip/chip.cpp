@@ -59,8 +59,8 @@ const VideoMemory& Chip::GetVideoMemory() const {
     return videoMemory;
 }
 
-void Chip::SetPressedKeys(const PressedKeys& keys) {
-    std::copy_n(keys.begin(), KEY_COUNT, pressedKeys.begin());
+void Chip::SetKeyState(const size_t key, const bool pressed) {
+    pressedKeys.at(key) = pressed;
 }
 
 void Chip::DrawSprite(const uint8_t &x, const uint8_t &y, const uint8_t &height) {
@@ -291,8 +291,6 @@ void Chip::Step() {
                         << std::endl;
                     }
 
-                    readInputs = true;
-
                     break;
 
                 case 0xA1:
@@ -306,8 +304,6 @@ void Chip::Step() {
                         << " has not been pressed"
                         << std::endl;
                     }
-
-                    readInputs = true;
 
                     break;
 

@@ -41,8 +41,7 @@ public:
     void Resume();
     const VideoMemory& GetVideoMemory() const;
     bool debugging = false;
-    void SetPressedKeys(const PressedKeys& keys);
-    bool readInputs = false;
+    void SetKeyState(const size_t key, const bool pressed);
 
 private:
     const std::array<uint8_t, FONTSET_SIZE> FONTSET{
