@@ -12,8 +12,8 @@
 
 #include "chip.hpp"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 320
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 640
 
 size_t mapKey(SDL_Keycode sym) {
     switch (sym) {
@@ -77,7 +77,7 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
-    SDL_RenderSetScale(renderer, 10, 10);
+    SDL_RenderSetScale(renderer, 20, 20);
 
     Chip chip;
 
@@ -98,8 +98,7 @@ int main(int argc, const char* argv[]) {
         SDL_PumpEvents();
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
-        SDL_SetRenderDrawColor(renderer, 255, 131, 35, 255);
+        SDL_SetRenderDrawColor(renderer, 224, 119, 32, 255);
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
