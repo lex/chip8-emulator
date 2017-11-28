@@ -325,8 +325,14 @@ void Chip::Step() {
 
                 case 0x0A:
                     // A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
-                    UnimplementedInstruction(instruction);
-                    PC += 2;
+                    for (size_t i = 0; i < KEY_COUNT; ++i) {
+                        if (pressedKeys[i]) {
+                            V[X] = i;
+                            PC += 2;
+                            break;
+                        }
+                    }
+
                     break;
 
                 case 0x15:
