@@ -370,7 +370,7 @@ void Chip::Step() {
 
                 case 0x55:
                     // Stores V0 to VX (including VX) in memory starting at address I.
-                    for (size_t i = 0; i < X; ++i) {
+                    for (size_t i = 0; i <= X; ++i) {
                         memory.at(I + i) = V.at(i);
                     }
 
@@ -380,7 +380,7 @@ void Chip::Step() {
 
                 case 0x65:
                     // Fills V0 to VX (including VX) with values from memory starting at address I.
-                    for (size_t i = 0; i < X; ++i) {
+                    for (size_t i = 0; i <= X; ++i) {
                         V.at(i) = memory.at(I + i);
                     }
 
