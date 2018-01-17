@@ -77,7 +77,6 @@ int main(int argc, const char* argv[]) {
         return 1;
     }
 
-    SDL_RenderSetScale(renderer, 20, 20);
 
     Chip chip;
 
@@ -90,12 +89,18 @@ int main(int argc, const char* argv[]) {
     const uint32_t targetMilliseconds = static_cast<uint32_t>(1.0f / 500.0f * 1000.0f);
 
     SDL_Event event;
+    SDL_Texture* texture;
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
     bool running = true;
 
     while (running) {
         const uint32_t startTicks = SDL_GetTicks();
 
         SDL_PumpEvents();
+
+        SDL_SetRenderTarget(renderer, texture);
+        SDL_RenderSetScale(renderer, 20, 20);
+
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 224, 119, 32, 255);
@@ -153,6 +158,8 @@ int main(int argc, const char* argv[]) {
             ++y;
         }
 
+        SDL_SetRenderTarget(renderer, NULL);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
 
         // keep it around 500 Hz
