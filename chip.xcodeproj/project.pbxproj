@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D701C6371F504DCF00D4A259 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D701C6361F504DCF00D4A259 /* libSDL2-2.0.0.dylib */; };
 		D7CEAF861F4B6CFC009D5CF6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7CEAF851F4B6CFC009D5CF6 /* main.cpp */; settings = {COMPILER_FLAGS = "$(SDL2_LIBS) $(SDL2_CFLAGS)"; }; };
 		D7F11C7E1F4C9FB700C7E51E /* chip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D7F11C7C1F4C9FB700C7E51E /* chip.cpp */; settings = {COMPILER_FLAGS = "$(SDL2_LIBS) $(SDL2_CFLAGS)"; }; };
 /* End PBXBuildFile section */
@@ -31,6 +30,7 @@
 		D7CEAF851F4B6CFC009D5CF6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D7F11C7C1F4C9FB700C7E51E /* chip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chip.cpp; sourceTree = "<group>"; };
 		D7F11C7D1F4C9FB700C7E51E /* chip.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = chip.hpp; sourceTree = "<group>"; };
+		D7FBD35E200F5836008CC9F6 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = ../../../../usr/local/Cellar/sdl2/2.0.6/lib/libSDL2.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,7 +38,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D701C6371F504DCF00D4A259 /* libSDL2-2.0.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +47,7 @@
 		D701C6351F504DCF00D4A259 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7FBD35E200F5836008CC9F6 /* libSDL2.dylib */,
 				D701C6361F504DCF00D4A259 /* libSDL2-2.0.0.dylib */,
 			);
 			name = Frameworks;
@@ -264,8 +264,10 @@
 					"-L/usr/local/lib",
 					"-lSDL2",
 					/usr/local/Cellar/sdl2/2.0.5/lib,
+					/usr/local/Cellar/sdl2/2.0.6/lib,
 				);
 				OTHER_CFLAGS = "$(SDL2_CFLAGS)";
+				OTHER_LDFLAGS = "$(SDL2_LIBS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -279,8 +281,10 @@
 					"-L/usr/local/lib",
 					"-lSDL2",
 					/usr/local/Cellar/sdl2/2.0.5/lib,
+					/usr/local/Cellar/sdl2/2.0.6/lib,
 				);
 				OTHER_CFLAGS = "$(SDL2_CFLAGS)";
+				OTHER_LDFLAGS = "$(SDL2_LIBS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
