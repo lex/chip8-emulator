@@ -35,7 +35,7 @@ class Chip {
 public:
     bool ReadRom(const std::string& file);
     void Initialize();
-    void Step();
+    void Step(const uint32_t ticks);
     void Stop();
     void Resume();
     const VideoMemory& GetVideoMemory() const;

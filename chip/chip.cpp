@@ -92,7 +92,7 @@ void Chip::DrawSprite(const uint8_t x, const uint8_t y, const uint8_t height) {
     }
 }
 
-void Chip::Step() {
+void Chip::Step(const uint32_t ticks) {
     const uint16_t instruction = memory[PC] << 8 | memory[PC + 1];
 
     // https://en.wikipedia.org/wiki/CHIP-8#Opcode_table
@@ -396,12 +396,17 @@ void Chip::Step() {
             break;
     }
 
-    if (delayTimer > 0) {
-        --delayTimer;
-    }
+    // CHIP-8 has two timers. They both count down at 60 hertz, until they reach 0.
+    // is this accurate (enough)?
+    if (ticks % 16 == 0) {
+        if (delayTimer > 0) {
+            --delayTimer;
+        }
 
-    if (soundTimer > 0) {
-        --soundTimer;
+        // should make sound here too
+        if (soundTimer > 0) {
+            --soundTimer;
+        }
     }
 }
 

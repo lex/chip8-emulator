@@ -114,7 +114,8 @@ int main(int argc, const char* argv[]) {
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
                 switch (event.key.keysym.sym) {
                     case SDLK_RETURN:
-                        chip.Step();
+                        // fix this, timers will break
+                        chip.Step(startTicks);
                         break;
 
                     case SDLK_ESCAPE:
@@ -138,7 +139,7 @@ int main(int argc, const char* argv[]) {
         }
 
         if (!chip.debugging) {
-            chip.Step();
+            chip.Step(startTicks);
         }
 
         // draw the screen
